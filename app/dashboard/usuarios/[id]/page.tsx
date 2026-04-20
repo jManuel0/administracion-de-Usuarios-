@@ -15,17 +15,17 @@ export default async function UsuarioDetallePage({
   if (!usuario) notFound()
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between gap-4">
+    <div className="p-4 md:p-6 space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Detalle de usuario</h1>
+          <h1 className="text-xl md:text-2xl font-semibold">Detalle de usuario</h1>
           <p className="text-muted-foreground text-sm">{usuario.email}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <Button asChild variant="outline" className="w-full sm:w-auto">
             <Link href="/dashboard/usuarios">Volver</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link
               href={`/dashboard/usuarios?edit=${encodeURIComponent(id)}&returnTo=${encodeURIComponent(
                 `/dashboard/usuarios/${id}`
@@ -37,7 +37,7 @@ export default async function UsuarioDetallePage({
         </div>
       </div>
 
-      <div className="rounded-md border bg-background p-6 space-y-4">
+      <div className="rounded-md border bg-background p-4 md:p-6 space-y-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <p className="text-sm text-muted-foreground">Nombre</p>
