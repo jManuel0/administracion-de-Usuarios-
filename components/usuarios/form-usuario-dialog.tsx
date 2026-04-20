@@ -36,11 +36,13 @@ export default function FormUsuarioDialog({
   open,
   onOpenChange,
   usuario,
+  usuarios,
   onGuardar,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   usuario: Usuario | null
+  usuarios: Usuario[]
   onGuardar: (usuario: Usuario) => void
 }) {
   const modoEdicion = Boolean(usuario)
@@ -66,10 +68,22 @@ export default function FormUsuarioDialog({
     return /^\S+@\S+\.\S+$/.test(email.trim())
   }, [email])
 
+  const emailDuplicado = useMemo(() => {
+    const emailNormalizado = email.trim().toLowerCase()
+    if (!emailNormalizado) return false
+
+    return usuarios.some(
+      (u) =>
+        u.id !== (usuario?.id ?? "") &&
+        u.email.trim().toLowerCase() === emailNormalizado
+    )
+  }, [email, usuarios, usuario?.id])
+
   const puedeGuardar =
     nombre.trim().length > 0 &&
     apellido.trim().length > 0 &&
     emailValido &&
+    !emailDuplicado &&
     rol.length > 0 &&
     estado.length > 0
 
@@ -143,6 +157,9 @@ export default function FormUsuarioDialog({
                 Escribe un correo válido.
               </p>
             )}
+            {emailDuplicado && (
+              <p className="text-xs text-destructive">Ese correo ya existe.</p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -193,4 +210,3 @@ export default function FormUsuarioDialog({
     </Dialog>
   )
 }
-

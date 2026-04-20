@@ -21,9 +21,20 @@ export default async function UsuarioDetallePage({
           <h1 className="text-2xl font-semibold">Detalle de usuario</h1>
           <p className="text-muted-foreground text-sm">{usuario.email}</p>
         </div>
-        <Button asChild variant="outline">
-          <Link href="/dashboard/usuarios">Volver</Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href="/dashboard/usuarios">Volver</Link>
+          </Button>
+          <Button asChild>
+            <Link
+              href={`/dashboard/usuarios?edit=${encodeURIComponent(id)}&returnTo=${encodeURIComponent(
+                `/dashboard/usuarios/${id}`
+              )}`}
+            >
+              Editar
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-md border bg-background p-6 space-y-4">
@@ -57,4 +68,3 @@ export default async function UsuarioDetallePage({
     </div>
   )
 }
-

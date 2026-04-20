@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { usuarios as datosIniciales } from "@/lib/datos"
 import { Usuario } from "@/types/usuario"
 import TablaUsuarios from "@/components/usuarios/tabla-usuarios"
@@ -19,11 +21,43 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export default function UsuariosPage() {
+  const router = useRouter()
+
   const [usuarios, setUsuarios] = useState<Usuario[]>(datosIniciales)
   const [usuarioEditar, setUsuarioEditar] = useState<Usuario | null>(null)
   const [usuarioEliminar, setUsuarioEliminar] = useState<Usuario | null>(null)
   const [abrirFormulario, setAbrirFormulario] = useState(false)
   const [tablaKey, setTablaKey] = useState(0)
+  const [edicionDesdeDetalle, setEdicionDesdeDetalle] = useState<{
+    id: string
+    returnTo: string | null
+  } | null>(null)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const editId = params.get("edit")
+    if (!editId) return
+
+    setEdicionDesdeDetalle({
+      id: editId,
+      returnTo: params.get("returnTo"),
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!edicionDesdeDetalle) return
+
+    const usuario = usuarios.find((u) => u.id === edicionDesdeDetalle.id) ?? null
+    if (!usuario) {
+      toast.error("Usuario no encontrado.")
+      router.replace("/dashboard/usuarios")
+      setEdicionDesdeDetalle(null)
+      return
+    }
+
+    setUsuarioEditar(usuario)
+    setAbrirFormulario(true)
+  }, [edicionDesdeDetalle, router, usuarios])
 
   const handleEliminar = (usuario: Usuario) => {
     setUsuarioEliminar(usuario)
@@ -42,11 +76,22 @@ export default function UsuariosPage() {
     })
 
     if (!existe) setTablaKey((k) => k + 1)
+
+    toast.success(existe ? "Usuario actualizado." : "Usuario creado.")
+
+    if (edicionDesdeDetalle?.returnTo) {
+      router.push(edicionDesdeDetalle.returnTo)
+      setEdicionDesdeDetalle(null)
+    } else if (edicionDesdeDetalle) {
+      router.replace("/dashboard/usuarios")
+      setEdicionDesdeDetalle(null)
+    }
   }
 
   const confirmarEliminar = () => {
     if (!usuarioEliminar) return
     setUsuarios((prev) => prev.filter((u) => u.id !== usuarioEliminar.id))
+    toast.success("Usuario eliminado.")
     setUsuarioEliminar(null)
   }
 
@@ -79,8 +124,18 @@ export default function UsuariosPage() {
 
       <FormUsuarioDialog
         open={abrirFormulario}
-        onOpenChange={setAbrirFormulario}
+        onOpenChange={(open) => {
+          setAbrirFormulario(open)
+          if (!open) {
+            setUsuarioEditar(null)
+            if (edicionDesdeDetalle) {
+              router.replace("/dashboard/usuarios")
+              setEdicionDesdeDetalle(null)
+            }
+          }
+        }}
         usuario={usuarioEditar}
+        usuarios={usuarios}
         onGuardar={handleGuardar}
       />
 
