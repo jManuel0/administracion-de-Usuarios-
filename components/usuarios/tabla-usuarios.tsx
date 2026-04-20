@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Pencil, Trash2, Eye, Plus } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash2, Eye } from "lucide-react"
 import { Usuario } from "@/types/usuario"
 
 interface Props {
